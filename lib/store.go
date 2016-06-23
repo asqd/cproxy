@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
+	"sync"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -22,12 +23,20 @@ type Store interface {
 
 	// Should append element to end of list
 	Append(*Cache)
+
+	// Mutex lock
+	Lock()
+
+	// Mutex unlock
+	Unlock()
 }
 
 // Store interface impelementation for Redis DB
 type RedisStore struct {
 	// Redis connection
 	Conn redis.Conn
+
+	*sync.Mutex
 }
 
 // Redis implementation of appending to list
@@ -48,7 +57,7 @@ func (s RedisStore) Append(c *Cache) {
 // Redis implementation of getting first record from list
 // and removing it from it
 func (s RedisStore) GetFirst() (*Cache, error) {
-	m := &Cache{}
+	m := &Cache{Store: s}
 
 	first, err := redis.String(s.Conn.Do("LPOP", *table))
 

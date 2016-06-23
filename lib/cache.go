@@ -70,6 +70,8 @@ func (c *Cache) Remove() error {
 func (c *Cache) Update(body []byte) error {
 	var err error
 
+	c.Store.Lock()
+
 	if c.Exists() {
 		err = c.Remove()
 
@@ -81,6 +83,8 @@ func (c *Cache) Update(body []byte) error {
 	err = c.Write(body)
 	c.CreatedAt = time.Now()
 	c.Store.Append(c)
+
+	c.Store.Unlock()
 
 	if err != nil {
 		return err

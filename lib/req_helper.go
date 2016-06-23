@@ -24,3 +24,10 @@ func (r ReqHelper) WriteHeader(status int) {
 		r.Writer.WriteHeader(status)
 	}
 }
+
+// Writes body of response
+func (r ReqHelper) Write(body []byte) {
+        if r.Writer != nil {
+                r.Writer.Write(body)
+        }
+}

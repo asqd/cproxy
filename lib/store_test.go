@@ -17,7 +17,7 @@ func TestRedisStoreAppendGetFirst(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 
-	m := &Cache{time.Now(), "http://hello.world", nil}
+	m := &Cache{time.Now(), "http://hello.world", store}
 
 	store.Append(m)
 

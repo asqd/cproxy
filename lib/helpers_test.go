@@ -5,19 +5,21 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 )
 
-type PreProxy struct {
-	StatusCode int
+type testProxy struct {
+	Code int
+	Body string
 }
 
-func (p PreProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(p.StatusCode)
-	fmt.Fprintln(w, "Write from fake prerender")
+func (p testProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(p.Code)
+	fmt.Fprintf(w, "%v", p.Body)
 }
 
-func mockPrerenderServer(p *PreProxy) *httptest.Server {
+func mockPrerenderServer(p *testProxy) *httptest.Server {
 	return httptest.NewServer(p)
 }
 
@@ -36,7 +38,7 @@ func resetCacheDir(t *testing.T) string {
 func getStore() RedisStore {
 	conn := ConnectRedis()
 
-	store := RedisStore{Conn: conn}
+	store := RedisStore{conn, &sync.Mutex{}}
 
 	return store
 }
