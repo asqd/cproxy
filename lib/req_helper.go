@@ -1,11 +1,6 @@
 package cproxy
 
-import (
-	"encoding/hex"
-	"flag"
-	"net/http"
-	"os"
-)
+import "net/http"
 
 // Helper struct for working with response
 // and request
@@ -21,13 +16,6 @@ func (r ReqHelper) FullPath() string {
 	u.Host = r.Request.Host
 
 	return u.String()
-}
-
-// Get hex form reqeust full url
-func (r ReqHelper) HexFromPath() string {
-	result := hex.EncodeToString([]byte(r.FullPath()))
-
-	return result
 }
 
 // Writes header of response
