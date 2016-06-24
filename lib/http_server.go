@@ -2,8 +2,9 @@ package cproxy
 
 import (
 	"flag"
-	"time"
+	"log"
 	"net/http"
+	"time"
 )
 
 var port = flag.String("port", ":80", "Port where server will listen")
@@ -24,6 +25,8 @@ type Server struct {
 func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	helper := ReqHelper{w, r}
 
+	beg := time.Now()
+
 	cache := &Cache{time.Now(), helper.FullPath(), s.Store}
 
 	if cache.Exists() {
@@ -34,9 +37,16 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		helper.Write(body)
+
+
+		spend := time.Since(beg)
+		log.Printf("Request: %v - %.2f sec\n", helper.FullPath(), spend.Seconds())
 		return
 	}
 
 	p := Prerender{helper, cache}
 	p.Process()
+
+	spend := time.Since(beg)
+	log.Printf("Request: %v - %.2f sec\n", helper.FullPath(), spend.Seconds())
 }
