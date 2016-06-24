@@ -16,7 +16,7 @@ func RunServer(store Store) {
 	http.ListenAndServe(*port, nil)
 }
 
-// ServerHTTP struct
+// http.Handler
 type Server struct {
 	Store Store
 }

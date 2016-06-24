@@ -34,19 +34,6 @@ func (p Prerender) Process() {
 	p.ReqHelper.Write(body)
 }
 
-// Same as Proccess() but without writing to http.ResponseWriter
-func (p Prerender) ProcessCache() {
-        body, code := p.GetContent()
-
-        if code == http.StatusOK {
-                err := p.Update(body)
-
-                if err != nil {
-                        return
-                }
-        }
-}
-
 // Return url for prerender service request e.g.:
 // http://localhost:3000/http://google.com
 func (p Prerender) UrlWithPrerender() string {
