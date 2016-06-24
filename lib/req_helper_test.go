@@ -25,7 +25,7 @@ func TestReqHelperFullUrl(t *testing.T) {
 
 	expect := "http://google.com"
 
-	r, err := requestStub(expect)
+	r, err := requestStub(expect + "?_escaped_fragment_=")
 
 	if err != nil {
 		t.Errorf("%v", err)

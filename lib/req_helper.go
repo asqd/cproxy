@@ -1,6 +1,9 @@
 package cproxy
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 // Helper struct for working with response
 // and request
@@ -15,7 +18,8 @@ func (r ReqHelper) FullPath() string {
 	u.Scheme = "http"
 	u.Host = r.Request.Host
 
-	return u.String()
+	return strings.Replace(u.String(), "?_escaped_fragment_=", "", -1)
+
 }
 
 // Writes header of response
@@ -27,7 +31,7 @@ func (r ReqHelper) WriteHeader(status int) {
 
 // Writes body of response
 func (r ReqHelper) Write(body []byte) {
-        if r.Writer != nil {
-                r.Writer.Write(body)
-        }
+	if r.Writer != nil {
+		r.Writer.Write(body)
+	}
 }
