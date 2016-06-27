@@ -38,7 +38,6 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		helper.Write(body)
 
-
 		spend := time.Since(beg)
 		log.Printf("Request: %v - %.2f sec\n", helper.FullPath(), spend.Seconds())
 		return

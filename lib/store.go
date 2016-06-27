@@ -44,12 +44,16 @@ func (s RedisStore) Append(c *Cache) {
 	cont, err := json.Marshal(c)
 
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
+	s.Lock()
 	_, err = s.Conn.Do("RPUSH", *table, string(cont))
+	s.Unlock()
 
 	if err != nil {
+		log.Println(err)
 		return
 	}
 }
@@ -59,7 +63,9 @@ func (s RedisStore) Append(c *Cache) {
 func (s RedisStore) GetFirst() (*Cache, error) {
 	m := &Cache{Store: s}
 
+	s.Lock()
 	first, err := redis.String(s.Conn.Do("LPOP", *table))
+	s.Unlock()
 
 	if err != nil {
 		return m, err
