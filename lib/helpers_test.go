@@ -35,10 +35,10 @@ func resetCacheDir(t *testing.T) string {
 	return dir
 }
 
-func getStore() RedisStore {
+func getStore() *RedisStore {
 	conn := ConnectRedis()
 
-	store := RedisStore{conn, &sync.Mutex{}}
+	store := &RedisStore{conn, &sync.Mutex{}}
 
 	return store
 }

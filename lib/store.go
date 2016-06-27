@@ -36,11 +36,12 @@ type RedisStore struct {
 	// Redis connection
 	Conn redis.Conn
 
+	// Redis exec lock
 	*sync.Mutex
 }
 
 // Redis implementation of appending to list
-func (s RedisStore) Append(c *Cache) {
+func (s *RedisStore) Append(c *Cache) {
 	cont, err := json.Marshal(c)
 
 	if err != nil {
@@ -53,14 +54,14 @@ func (s RedisStore) Append(c *Cache) {
 	s.Unlock()
 
 	if err != nil {
-		log.Println(err)
-		return
+		s.TryRestore()
+		s.Append(c)
 	}
 }
 
 // Redis implementation of getting first record from list
 // and removing it from it
-func (s RedisStore) GetFirst() (*Cache, error) {
+func (s *RedisStore) GetFirst() (*Cache, error) {
 	m := &Cache{Store: s}
 
 	s.Lock()
@@ -68,7 +69,8 @@ func (s RedisStore) GetFirst() (*Cache, error) {
 	s.Unlock()
 
 	if err != nil {
-		return m, err
+		s.TryRestore()
+		return s.GetFirst()	
 	}
 
 	err = json.Unmarshal([]byte(first), m)
@@ -80,6 +82,16 @@ func (s RedisStore) GetFirst() (*Cache, error) {
 	return m, nil
 }
 
+// Try to restore connection if it got error
+func (s *RedisStore) TryRestore() {
+	if err := s.Conn.Err(); if != nil {
+		log.Println("Reconnectin redis")
+		s.Conn.Close()
+		s.Conn = ConnectRedis()
+	}
+}
+
+
 // Creates connection to Redis
 func ConnectRedis() redis.Conn {
 	conn, err := redis.Dial("tcp", *redisPort)
@@ -90,3 +102,4 @@ func ConnectRedis() redis.Conn {
 
 	return conn
 }
+

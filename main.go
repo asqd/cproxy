@@ -29,7 +29,7 @@ func main() {
 
 	w.Add(1)
 
-	store := cproxy.RedisStore{cproxy.ConnectRedis(), &sync.Mutex{}}
+	store := &cproxy.RedisStore{cproxy.ConnectRedis(), &sync.Mutex{}}
 	defer store.Conn.Close()
 	log.Println("Database connected")
 
