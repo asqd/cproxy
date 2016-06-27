@@ -80,6 +80,7 @@ func (c *Cache) Update(body []byte) error {
 
 	err = c.Write(body)
 	c.CreatedAt = time.Now()
+	
 	c.Store.Append(c)
 
 	if err != nil {

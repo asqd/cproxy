@@ -9,13 +9,21 @@ import (
 func TestExistsReadWriteRemoveUpdate(t *testing.T) {
 	resetCacheDir(t)
 
-	c := Cache{time.Now(), "http://google.com", getStore()}
+	store := getStore()
+
+	c := Cache{time.Now(), "http://google.com", store}
+
+        _, err := store.Conn.Do("DEL", *table)
+
+        if err != nil {
+                t.Error(err)
+        }
 
 	if c.Exists() {
 		t.Error("Expected just created cache to be false got true")
 	}
 
-	err := c.Write([]byte{})
+	err = c.Write([]byte{})
 
 	if err != nil {
 		t.Error(err)

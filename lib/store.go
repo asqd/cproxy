@@ -54,7 +54,6 @@ func (s *RedisStore) Append(c *Cache) {
 	s.Unlock()
 
 	if err != nil {
-		s.TryRestore()
 		s.Append(c)
 	}
 }
@@ -69,8 +68,7 @@ func (s *RedisStore) GetFirst() (*Cache, error) {
 	s.Unlock()
 
 	if err != nil {
-		s.TryRestore()
-		return s.GetFirst()	
+		return m, err
 	}
 
 	err = json.Unmarshal([]byte(first), m)
@@ -81,16 +79,6 @@ func (s *RedisStore) GetFirst() (*Cache, error) {
 
 	return m, nil
 }
-
-// Try to restore connection if it got error
-func (s *RedisStore) TryRestore() {
-	if err := s.Conn.Err(); if != nil {
-		log.Println("Reconnectin redis")
-		s.Conn.Close()
-		s.Conn = ConnectRedis()
-	}
-}
-
 
 // Creates connection to Redis
 func ConnectRedis() redis.Conn {

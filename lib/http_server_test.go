@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/garyburd/redigo/redis"
 )
 
 func TestServeHTTP(t *testing.T) {
@@ -57,6 +59,16 @@ func TestServeHTTP(t *testing.T) {
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Expected recorder code to be %v got %v", http.StatusOK, w.Code)
+	}
+
+	count, err := redis.Int(store.Conn.Do("LLEN", *table))
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if count != 1 {
+		t.Errorf("Expected request to create record in redis")
 	}
 
 	_, err = store.Conn.Do("DEL", *table)

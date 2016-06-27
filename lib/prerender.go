@@ -47,9 +47,7 @@ func (p Prerender) GetContent() ([]byte, int) {
 	response, err := http.Get(p.UrlWithPrerender())
 
 	if err != nil {
-		log.Println(err)
-
-		return []byte{}, http.StatusInternalServerError
+		return p.GetContent()
 	}
 
 	defer response.Body.Close()
@@ -59,7 +57,7 @@ func (p Prerender) GetContent() ([]byte, int) {
 	if err != nil {
 		log.Println(err)
 
-		return []byte{}, http.StatusInternalServerError
+		return p.GetContent()
 	}
 
 	return body, response.StatusCode
