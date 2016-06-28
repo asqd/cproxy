@@ -36,7 +36,7 @@ func main() {
 	go cproxy.RunServer(store)
 	log.Println("Server started")
 
-	cw := cproxy.CacheWorker{store}
+	cw := cproxy.CacheWorker{store, 250}
 	go cw.Run()
 	log.Println("Cache worker started")
 

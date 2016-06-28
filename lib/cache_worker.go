@@ -5,6 +5,7 @@ import "time"
 // Caching worker struct
 type CacheWorker struct {
 	Store Store
+	Sleep time.Duration
 }
 
 // Run worker for endless recache loop
@@ -28,11 +29,14 @@ func (w CacheWorker) Loop() {
 	if c.ShouldRecache() {
 		p := Prerender{Cache: c}
 		p.Process()
+		w.Sleep = 0
 		afterRecache()
 		return
 	}
 
 	w.Store.Append(c)
+	time.Sleep(w.Sleep * time.Millisecond)
+	w.Sleep = 250
 }
 
 var (

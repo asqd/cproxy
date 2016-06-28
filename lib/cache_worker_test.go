@@ -25,7 +25,7 @@ func TestCacheWorkerLoop(t *testing.T) {
 	dir := resetCacheDir(t)
 	defer os.Remove(dir)
 
-	cw := &CacheWorker{store}
+	cw := &CacheWorker{store, 250}
 
 	afterGetBool := true
 	afterGetFirstFail = func() {
